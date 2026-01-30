@@ -7,7 +7,7 @@ public class SinglyLinkedList<E> implements List<E> {
 
     private static class Node<E> {
 
-        private final E element;            // reference to the element stored at this node
+        private E element;            // reference to the element stored at this node
 
         /**
          * A reference to the subsequent node in the list
