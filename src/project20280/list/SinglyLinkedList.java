@@ -1,8 +1,6 @@
-// test to see if git works
 package project20280.list;
 
 import project20280.interfaces.List;
-
 import java.util.Iterator;
 
 public class SinglyLinkedList<E> implements List<E> {
@@ -73,10 +71,9 @@ public class SinglyLinkedList<E> implements List<E> {
     public SinglyLinkedList() {
     }              // constructs an initially empty list
 
-    //@Override
+    @Override
     public int size() {
-        // TODO
-        return 0;
+        return size;
     }
 
     //@Override
