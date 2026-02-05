@@ -78,48 +78,115 @@ public class SinglyLinkedList<E> implements List<E> {
 
     //@Override
     public boolean isEmpty() {
-        // TODO
-        return false;
+        return size == 0;
     }
 
     @Override
     public E get(int position) {
-        // TODO
-        return null;
+        if (position < 0 || position >= size) {
+            return null;
+        }
+        Node<E> node = head;
+        for (int i = 0; i < position; i++) {
+            node = node.getNext();
+        }
+        return node.getElement();
     }
 
     @Override
     public void add(int position, E e) {
-        // TODO
+        if (position < 0 || position > size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        if (position == 0){
+            addFirst(e);
+            return;
+        }
+
+        Node<E> node = head;
+        for (int i = 0; i < position - 1; i++) {
+            node = node.getNext();
+        }
+
+        Node<E> latest = new Node<>(e, node.getNext());
+        node.setNext(latest);
+        size++;
     }
 
 
     @Override
     public void addFirst(E e) {
-        // TODO
+        head = new Node<>(e, head);
+        size++;
     }
 
     @Override
     public void addLast(E e) {
-        // TODO
+        if (isEmpty()) {
+            addFirst(e);
+            return;
+        }
+        Node<E> node = head;
+        while (node.getNext() != null) {
+            node = node.getNext();
+        }
+        node.setNext(new Node<>(e, null));
+        size++;
     }
 
     @Override
     public E remove(int position) {
-        // TODO
-        return null;
+        if (position < 0 || position > size) {
+            return null;
+        }
+
+        if (position == 0){
+            return removeFirst();
+        }
+
+        Node<E> node = head;
+        for (int i = 0; i < position - 1; i++) {
+            node = node.getNext();
+        }
+
+        Node<E> removed =  node.getNext();
+        node.setNext(removed.getNext());
+        size--;
+        return removed.getElement();
     }
 
     @Override
     public E removeFirst() {
-        // TODO
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+
+        E value = head.getElement();
+        head = head.getNext();
+        size--;
+        return value;
     }
 
     @Override
     public E removeLast() {
-        // TODO
-        return null;
+        if  (isEmpty()) {
+            return null;
+        }
+
+        if  (size == 1) {
+            return removeFirst();
+        }
+
+        Node<E> node = head;
+        while (node.getNext().getNext() != null) {
+            node = node.getNext();
+        }
+
+        E value = node.getNext().getElement();
+        node.setNext(null);
+        size--;
+        return value;
     }
 
     //@Override
