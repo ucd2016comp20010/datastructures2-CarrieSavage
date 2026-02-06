@@ -86,6 +86,19 @@ public class SinglyLinkedList<E> implements List<E> {
         size++;
     }
 
+    public void reverse() {
+        Node<E> prev = null;
+        Node<E> curr = head;
+
+        while (curr != null) {
+            Node<E> next = curr.getNext();
+            curr.setNext(prev);
+            prev = curr;
+            curr = next;
+        }
+
+        head = prev;
+    }
 
     @Override
     public void addFirst(E e) {
@@ -210,9 +223,13 @@ public class SinglyLinkedList<E> implements List<E> {
         //ll.removeFirst();
         //System.out.println("I accept your apology");
         //ll.add(3, 2);
+
         System.out.println(ll);
         ll.remove(5);
         System.out.println(ll);
+
+        ll.reverse();
+        System.out.println("Reversed : " + ll);
 
     }
 }
