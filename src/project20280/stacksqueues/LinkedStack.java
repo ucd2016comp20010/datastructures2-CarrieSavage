@@ -3,6 +3,8 @@ package project20280.stacksqueues;
 import project20280.interfaces.Stack;
 import project20280.list.DoublyLinkedList;
 
+import java.util.Optional;
+
 public class LinkedStack<E> implements Stack<E> {
 
     DoublyLinkedList<E> ll;

@@ -1,5 +1,6 @@
 package project20280.interfaces;
 
+
 public interface Stack<E> {
 
     /**
