@@ -3,6 +3,8 @@ package project20280.tree;
 import project20280.interfaces.Position;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 /**
@@ -81,8 +83,160 @@ public class LinkedBinaryTree<E> extends AbstractBinaryTree<E> {
 
         Position<String> nodeB = bt1.left(root);
         System.out.println("Descendants of B = " + bt1.countDescendants(nodeB));
+
+        bt1.createLevelOrderIterative(arr1);
+        bt2.createLevelOrderIterative(arr2);
+
+        System.out.println("Iterative tree bt1 : \n");
+        System.out.println(bt1.toBinaryTreeString());
+
+        System.out.println("Iterative tree bt2 : \n");
+        System.out.println(bt2.toBinaryTreeString());
+
+        Integer [] inorder = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30};
+        Integer [] preorder = {18,2,1,14,13,12,4,3,9,6,5,8,7,10,11,15,16,17,28,23,19,22,20,21,24,27,26,25,29,30};
+
+        LinkedBinaryTree<Integer> bt = new LinkedBinaryTree<>();
+        bt.construct(inorder, preorder);
+        System.out.println(bt.toBinaryTreeString());
+
+        Integer [] inorder1 = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+        Integer [] preorder2 = {4, 2, 1, 0, 3, 6, 5, 7, 8};
+
+        LinkedBinaryTree<Integer> bt3 = new LinkedBinaryTree<>();
+        bt3.construct(inorder1, preorder2);
+        System.out.println(bt3.toBinaryTreeString());
+        bt3.printRootToLeafPaths();
+
+        Integer [] inorder2 = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22};
+        Integer[] preorder3 = {6,5,3,2,1,0,4,17,10,9,8,7,16,14,13,12,11,15,21,20,19,18,22};
+
+        LinkedBinaryTree<Integer> bt4 = new LinkedBinaryTree<>();
+        bt4.construct(inorder2, preorder3);
+        System.out.println(bt4.toBinaryTreeString());
+        System.out.println("\nDiameter : " + bt4.diameter2());
     }
 
+    public void createLevelOrderIterative(E[] arr){
+        if (arr == null || arr.length == 0 || arr[0] == null) {
+            root = null;
+            size = 0;
+            return;
+        }
+
+        java.util.Queue<Node<E>> queue = new java.util.LinkedList<>();
+
+        root = new Node<>(arr[0], null, null, null);
+        queue.offer(root);
+        size = 1;
+
+        int i = 1;
+
+        while (!queue.isEmpty() && i < arr.length) {
+            Node<E> current = queue.poll();
+
+            if (i < arr.length && arr[i] != null) {
+                Node<E> left = new Node<>(arr[i], current, null, null);
+                current.setLeft(left);
+                queue.offer(left);
+                size++;
+            }
+            i++;
+
+            if (i < arr.length && arr[i] != null) {
+                Node<E> right = new Node<>(arr[i], current, null, null);
+                current.setRight(right);
+                queue.offer(right);
+                size++;
+            }
+            i++;
+        }
+    }
+
+    public void construct(E[] inorder, E[] preorder){
+        if (inorder == null || preorder == null || inorder.length != preorder.length) {
+            throw  new IllegalArgumentException("Invalid");
+        }
+
+        java.util.Map<E, Integer> indexMap = new java.util.HashMap<>();
+
+        for (int i = 0; i < inorder.length; i++) {
+            indexMap.put(inorder[i], i);
+        }
+
+        root = buildFromTraversals(inorder, 0, inorder.length - 1, preorder, 0, preorder.length - 1, indexMap, null);
+
+        size = inorder.length;
+    }
+
+    private Node<E> buildFromTraversals(E[] inorder, int inStart, int inEnd, E[] preorder, int preStart, int preEnd, java.util.Map<E, Integer> indexMap, Node<E> parent){
+        if (inStart > inEnd || preStart > preEnd) {
+            return null;
+        }
+
+        E rootValue = preorder[preStart];
+        Node<E> node = new Node<>(rootValue, parent, null, null);
+
+        int inorderIndex = indexMap.get(rootValue);
+        int leftSize = inorderIndex - inStart;
+
+        node.setLeft(buildFromTraversals(inorder, inStart, inorderIndex-1, preorder, preStart + 1, preStart + leftSize, indexMap, node));
+
+        node.setRight(buildFromTraversals(inorder, inorderIndex+1, inEnd, preorder, preStart + 1 + leftSize, preEnd, indexMap, node));
+
+        return node;
+    }
+
+    public List<List<E>> rootToLeafPaths() {
+        List<List<E>> result = new ArrayList<>();
+        List<E> currentPath = new ArrayList<>();
+        collectPaths(root, currentPath, result);
+        return result;
+    }
+
+    private void collectPaths(Node<E> node, List<E> path, List<List<E>> result) {
+        if (node == null) {
+            return;
+        }
+
+        path.add(node.getElement());
+
+        if (node.getLeft() == null && node.getRight() == null) {
+            result.add(new ArrayList<>(path));
+        }else{
+            collectPaths(node.getLeft(), path, result);
+            collectPaths(node.getRight(), path, result);
+        }
+
+        path.remove(path.size()-1);
+    }
+
+    public void printRootToLeafPaths() {
+        for (List<E> path : rootToLeafPaths()) {
+            System.out.println(path);
+        }
+    }
+
+    public int diameter2() {
+        int[] max = new int[1];
+        heightAndDiameter(root, max);
+        return max[0];
+    }
+
+    private int heightAndDiameter(Node<E> node, int[] max) {
+        if (node == null) {
+            return 0;
+        }
+
+        int leftHeight = heightAndDiameter(node.getLeft(), max);
+        int rightHeight = heightAndDiameter(node.getRight(), max);
+
+        int pathLength = leftHeight + rightHeight + 1;
+
+        max[0] = Math.max(max[0], pathLength);
+
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
 
     /**
      * Factory function to create a new node storing element e.
